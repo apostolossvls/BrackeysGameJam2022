@@ -46,6 +46,7 @@ public class Gun : MonoBehaviour
         fball.SetActive(true);
         Vector3 v = new Vector3(sourceObject.transform.forward.x, 0, sourceObject.transform.forward.z);
         fball.GetComponent<Rigidbody>().AddForce((sourceObject.transform.forward+(Vector3.up*0.1f))*fireballForce, ForceMode.VelocityChange);
+        fball.GetComponent<Bullet>().Setup(transform);
         Destroy(fball, 5f);
     }
 }
