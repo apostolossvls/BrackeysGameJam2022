@@ -6,6 +6,7 @@ public class PlayerHealth : MonoBehaviour
 {
     public int hearts;
     public GameObject[] heartsObjects;
+    public CameraControl cameraControl;
 
     // Start is called before the first frame update
     void Start()
@@ -57,10 +58,15 @@ public class PlayerHealth : MonoBehaviour
         {
             Die();
         }
+        else
+        {
+            cameraControl.PlayerHitShake();
+        }
     }
 
     void Die()
     {
         Debug.Log("Player Death");
+        GameManager.instance.GameOver();
     }
 }

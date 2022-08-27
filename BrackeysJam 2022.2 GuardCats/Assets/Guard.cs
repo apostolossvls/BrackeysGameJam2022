@@ -43,6 +43,7 @@ public class Guard : MonoBehaviour
     public void Die()
     {
         generator.NotifyDeath(this);
+        GameManager.instance.AddScore();
         Destroy(gameObject);
     }
 }

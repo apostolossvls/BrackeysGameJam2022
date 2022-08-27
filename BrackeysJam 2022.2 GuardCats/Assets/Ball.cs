@@ -18,8 +18,9 @@ public class Ball : MonoBehaviour
     public float damage = 1f;
     bool hitsCompleted; 
 
-    public void Setup(Transform target)
+    public void Setup(Transform target, float speedMultiplier)
     {
+        forceSpeed *= speedMultiplier;
         this.target = target;
         rb = GetComponent<Rigidbody2D>();
         rb.AddForce((target.position - transform.position).normalized * forceSpeed, forceMode);

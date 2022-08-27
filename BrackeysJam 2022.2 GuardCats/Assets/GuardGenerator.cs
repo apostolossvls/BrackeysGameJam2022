@@ -2,13 +2,13 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEditor.PlayerSettings;
 
 public enum GenerateGuardMode
 {
     HoldAndRelease = 0,
     ClickTwice = 1,
-    AutoToClickRelease = 2
+    AutoToClickRelease = 2,
+    HoldAndReleaseProtectFirst = 3
 }
 
 public enum AimGuardMode
@@ -30,7 +30,6 @@ public class GuardGenerator : MonoBehaviour
     public float previewRotationSpeed = 5f;
     public int[] ringsCounts = new int[4];
     bool canFit;
-    int canCreateGuardLevel = 0;
     public float energy = 0;
     public float energyRate = 1;
     public float[] energyPerGuard = new float[1] {3f};
@@ -84,6 +83,14 @@ public class GuardGenerator : MonoBehaviour
         {
             energy += energyRate * Time.deltaTime;
         }
+        else if (generateGuardMode == GenerateGuardMode.HoldAndReleaseProtectFirst)
+        {
+            if (Input.GetMouseButtonDown(0)){
+                clickedOnce = true;
+            }
+            if (Input.GetMouseButton(0) || clickedOnce) energy += energyRate * Time.deltaTime;
+            //else if (!Input.GetMouseButtonUp(0) && !clickedOnce) energy = 0;
+        }
 
         int i = 0;
         do
@@ -125,11 +132,31 @@ public class GuardGenerator : MonoBehaviour
         {
             CreateGuard();
         }
+        else if (generateGuardMode == GenerateGuardMode.HoldAndReleaseProtectFirst && clickedOnce)
+        {
+            if (CanCreate() != -1 && !Input.GetMouseButton(0))
+            {
+                CreateGuard();
+                clickedOnce = false;
+            }
+        }
     }
 
-    void CreateGuard()
+    int CanCreate()
     {
-        if (!canFit) return;
+        int index = -1;
+        for (int i = energyPerGuard.Length - 1; i >= 0; i--)
+        {
+            bool result = energy >= energyPerGuard[i];
+            index = result ? i : index;
+            if (result) break;
+        }
+        return index;
+    }
+
+    int CreateGuard()
+    {
+        if (!canFit) return -1;
 
         int index = -1;
         for (int i = energyPerGuard.Length - 1; i >= 0; i--)
@@ -148,7 +175,10 @@ public class GuardGenerator : MonoBehaviour
             guard.SetActive(true);
 
             AddRingCount(guard.transform.position);
+            
+            clickedOnce = false;
         }
+        return index;
     }
 
     void AddRingCount(Vector2 pos)
