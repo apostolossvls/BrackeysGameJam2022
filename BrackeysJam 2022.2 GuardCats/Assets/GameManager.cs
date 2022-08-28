@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
+using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
@@ -16,6 +17,7 @@ public class GameManager : MonoBehaviour
     public TextMeshProUGUI scoreText, scoreGameOverText;
     public int score;
     public BallGenerator ballGenerator;
+    public Slider[] audioSliders; //ui volume sliders
     bool hintfromStart;
     bool paused;
 
@@ -47,20 +49,34 @@ public class GameManager : MonoBehaviour
         paused = false;
         score = 0;
 
+        AudioManager.Instance.GetSlidersFromGameManager(audioSliders);
+
+        hintfromStart = true; //
         if (SceneData.Instance.fromMenu)
         {
             hintScreen.SetActive(true);
-            hintfromStart = true;
+            //hintfromStart = true;
             SceneData.Instance.fromMenu = false;
         }
         else
         {
             hintScreen.SetActive(false);
-            hintfromStart = false;
+            //hintfromStart = false;
 
             StopCoroutine("StartCountdown");
             StartCoroutine("StartCountdown");
         }
+
+    }
+
+    public void ChangeVolume(Slider s)
+    {
+        AudioManager.Instance.ChangeVolume(s);
+    }
+
+    public void OpenHint()
+    {
+        hintScreen.SetActive(true);
     }
 
     public void CloseHint()
@@ -81,6 +97,8 @@ public class GameManager : MonoBehaviour
         scoreText.text = score.ToString();
         scoreText.GetComponentInParent<Animator>().SetTrigger("Pop");
 
+        AudioManager.Instance.AddPoint();
+
         ballGenerator.IncreaseDifficulty();
     }
 
@@ -90,11 +108,16 @@ public class GameManager : MonoBehaviour
         countdownText.gameObject.SetActive(true);
         scoreText.text = score.ToString();
         countdownText.text = "3";
+        AudioManager.Instance.Countdown(0);
         yield return new WaitForSeconds(1f);
         countdownText.text = "2";
+        AudioManager.Instance.Countdown(0);
         yield return new WaitForSeconds(1f);
         countdownText.text = "1";
-        yield return new WaitForSeconds(1f);
+        AudioManager.Instance.Countdown(0);
+        yield return new WaitForSeconds(0.6f);
+        AudioManager.Instance.Countdown(1);
+        yield return new WaitForSeconds(0.4f);
         countdownText.text = "GO!!!";
         StartGame();
         yield return new WaitForSeconds(0.6f);
@@ -115,6 +138,7 @@ public class GameManager : MonoBehaviour
     {
         paused = true;
         pauseScreen.SetActive(true);
+        hintfromStart = false;
         AudioManager.Instance.music.Pause();
         Time.timeScale = 0;
     }
@@ -122,6 +146,7 @@ public class GameManager : MonoBehaviour
     {
         paused = false;
         pauseScreen.SetActive(false);
+        hintScreen.SetActive(false);
         AudioManager.Instance.music.UnPause();
         Time.timeScale = 1;
     }

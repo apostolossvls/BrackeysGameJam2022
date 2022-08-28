@@ -56,12 +56,20 @@ public class Ball : MonoBehaviour
             else if (other.tag == "Guard1")
             {
                 other.GetComponent<Guard>().TakeDamage(damage);
-                if (ballType == BallType.Normal) Die();
+                if (ballType == BallType.Normal)
+                {
+                    Die();
+                }
+                else AudioManager.Instance.Missed();
             }
             else if (other.tag == "Guard2")
             {
                 other.GetComponent<Guard>().TakeDamage(damage);
-                if (ballType == BallType.Normal || ballType == BallType.IceBall) Die();
+                if (ballType == BallType.Normal || ballType == BallType.IceBall)
+                {
+                    Die();
+                }
+                else AudioManager.Instance.Missed();
             }
             else if (other.tag == "Guard3")
             {

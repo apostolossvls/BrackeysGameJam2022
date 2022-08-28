@@ -176,6 +176,8 @@ public class GuardGenerator : MonoBehaviour
 
             previewCreatePs.Emit(14);
 
+            AudioManager.Instance.CreateCat();
+
             AddRingCount(guard.transform.position);
             
             clickedOnce = false;
