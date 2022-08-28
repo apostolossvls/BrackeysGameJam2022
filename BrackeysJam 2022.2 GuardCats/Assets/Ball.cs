@@ -13,6 +13,8 @@ public class Ball : MonoBehaviour
     public Transform target;
     Rigidbody2D rb;
     public float forceSpeed;
+    public float torqueForceMin = 20f;
+    public float torqueForceMax = 30f;
     public ForceMode2D forceMode;
     public BallType ballType = BallType.Normal;
     public float damage = 1f;
@@ -24,11 +26,21 @@ public class Ball : MonoBehaviour
         this.target = target;
         rb = GetComponent<Rigidbody2D>();
         rb.AddForce((target.position - transform.position).normalized * forceSpeed, forceMode);
+
+        rb.AddTorque(((Random.Range(0, 2) * 2) - 1) * Random.Range(torqueForceMin, torqueForceMax));
     }
 
     void Die()
     {
         hitsCompleted = true;
+
+        GameManager.instance.AddScore();
+
+        ParticleSystem ps = GetComponentInChildren<ParticleSystem>();
+        ps.transform.parent = null;
+        ps.Emit(16);
+        Destroy(ps.gameObject, 1f);
+
         Destroy(gameObject);
     }
 

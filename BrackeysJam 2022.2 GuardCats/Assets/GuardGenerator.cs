@@ -21,6 +21,7 @@ public class GuardGenerator : MonoBehaviour
 {
     public Transform previewPivot;
     public Transform previewTransform;
+    public ParticleSystem previewCreatePs;
     public SpriteRenderer[] previewSpritesBlocked;
     public SpriteRenderer[] previewSprites;
     public Image[] energyBars;
@@ -170,9 +171,10 @@ public class GuardGenerator : MonoBehaviour
             energy = 0;
 
             GameObject guard = GameObject.Instantiate(guardOriginal[index], guardsParent);
-            guard.transform.position = previewTransform.position;
-            guard.GetComponent<Guard>().Setup(this, previewPivot);
+            guard.GetComponent<Guard>().Setup(previewTransform.position, this, previewPivot);
             guard.SetActive(true);
+
+            previewCreatePs.Emit(14);
 
             AddRingCount(guard.transform.position);
             

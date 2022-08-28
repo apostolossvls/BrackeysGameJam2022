@@ -61,6 +61,7 @@ public class PlayerHealth : MonoBehaviour
         else
         {
             cameraControl.PlayerHitShake();
+            AudioManager.Instance.PlayerHurt();
         }
     }
 
